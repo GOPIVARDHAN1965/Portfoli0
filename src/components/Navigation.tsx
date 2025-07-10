@@ -49,7 +49,7 @@ export const Navigation = () => {
 
             {/* Download Resume link */}
               <a
-                href="public/resume.pdf"
+                href="/resume.pdf"
                 // download
                 className="px-4 py-2 bg-dashboard-primary text-background rounded-md font-medium transition-colors duration-200 hover:bg-dashboard-secondary"
               >
@@ -88,7 +88,7 @@ export const Navigation = () => {
             ))}
             {/* Download Resume for mobile */}
               <a
-                href="public/resume.pdf"
+                href="/resume.pdf"
                 // download
                 className="block py-3 px-4 bg-dashboard-primary text-background font-medium rounded-md text-center mt-2"
                 onClick={() => setIsMobileMenuOpen(false)}
