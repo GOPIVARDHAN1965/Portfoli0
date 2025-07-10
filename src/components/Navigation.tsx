@@ -46,6 +46,17 @@ export const Navigation = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-dashboard-primary transition-all duration-300 group-hover:w-full"></span>
               </a>
             ))}
+
+            {/* Download Resume link */}
+              <a
+                href="public/resume.pdf"
+                // download
+                className="px-4 py-2 bg-dashboard-primary text-background rounded-md font-medium transition-colors duration-200 hover:bg-dashboard-secondary"
+              >
+                Download Resume
+              </a>
+
+            
             <ThemeToggle />
           </div>
 
@@ -75,6 +86,15 @@ export const Navigation = () => {
                 {item.label}
               </a>
             ))}
+            {/* Download Resume for mobile */}
+              <a
+                href="public/resume.pdf"
+                // download
+                className="block py-3 px-4 bg-dashboard-primary text-background font-medium rounded-md text-center mt-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Download Resume
+              </a>
           </div>
         )}
       </div>
