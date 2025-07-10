@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-   base:'/Portfoli0/blob/gh-pages/',
+   base:'/Portfoli0/',
   plugins: [
     react(),
     mode === 'development' &&
