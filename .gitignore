@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# --- added by ~/dev/setup/move_project.py ---
+.DS_Store
+__pycache__/
+.ipynb_checkpoints/
+node_modules/
+.next/
+dist/
+build/
+venv/
+.venv/
+env/
+myenv/
+.env
+.env.*
+*.pem
+*.key
