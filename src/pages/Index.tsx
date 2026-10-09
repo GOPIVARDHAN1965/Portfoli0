@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
-  FORMSPREE_ID, profile, work, experience, projects,
+  FORMSPREE_ID, profile, work, systems, experience, projects,
   achievements, skills, certifications, education,
 } from "@/content";
 
@@ -18,6 +18,7 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 type Activity = {
   latest: { private: false; repo: string; url: string; msg: string; when: string } | { private: true; when: string } | null;
   week: { commits: number; classified: number };
+  updated: string;
 };
 function useActivity() {
   const [a, setA] = useState<Activity | null>(null);
@@ -38,6 +39,16 @@ function Scramble({ paused, length = 18 }: { paused: boolean; length?: number })
     return () => clearInterval(t);
   }, [paused, length]);
   return <span className="pt-scramble" aria-label="classified">▓▒░{text}░▒▓</span>;
+}
+
+const clockFmt = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+function useClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 15_000);
+    return () => clearInterval(t);
+  }, []);
+  return clockFmt.format(now);
 }
 
 const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
@@ -140,7 +151,7 @@ const Nav = ({ paused, setPaused }: { paused: boolean; setPaused: (p: boolean) =
       <a href="#top" className="pt-mono font-bold text-sm md:text-base"><span className="pt-neon">~/</span>{profile.handle}</a>
       <div className="flex items-center gap-3 md:gap-5 text-sm">
         <span className="hidden md:flex gap-5 pt-mono">
-          <a href="#work">work</a><a href="#experience">experience</a>
+          <a href="#work">work</a><a href="#systems">systems</a><a href="#experience">experience</a>
           <a href="#projects">projects</a><a href="#contact">contact</a>
         </span>
         <a href={RESUME} target="_blank" rel="noopener noreferrer" className="pt-btn">résumé.pdf</a>
@@ -165,7 +176,7 @@ function Contact() {
     if (res?.ok) form.reset();
   };
   return (
-    <Section id="contact" n="07" title="Contact" cmd="ping gopi">
+    <Section id="contact" n="08" title="Contact" cmd="ping gopi">
       <p className="pt-soft mb-6">Get in touch.</p>
       <div className="flex flex-wrap gap-3 mb-8 pt-mono text-sm">
         <a className="pt-btn" href={`mailto:${profile.email}`}>{profile.email}</a>
@@ -194,6 +205,7 @@ const Index = () => {
   const lines = useTyping(paused, run);
   const done = lines[lines.length - 1].out !== null;
   const activity = useActivity();
+  const clock = useClock();
   const latest = activity?.latest;
 
   useEffect(() => { document.documentElement.classList.toggle("pt-paused", paused); }, [paused]);
@@ -214,32 +226,41 @@ const Index = () => {
                 {l.out && <div className={i === 0 ? "pt-name" : i === 1 ? "pt-soft" : "pt-faint"}>{l.out}</div>}
               </div>
             ))}
-            {done && latest && (
+            {done && (
               <div className="pt-mono">
-                <div><span className="pt-neon">$ </span>git log -1 --oneline</div>
-                <div className="pt-commit pt-faint">
-                  {"repo" in latest ? (
-                    <>
-                      <a href={latest.url} target="_blank" rel="noopener noreferrer" className="pt-soft">{latest.repo}</a>
-                      <span className="pt-commit-msg">· {latest.msg}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="pt-redact" aria-hidden="true">████████</span>
-                      <span className="pt-commit-msg">· <Scramble paused={paused} /></span>
-                    </>
-                  )}
-                  <span>· {ago(latest.when)}</span>
-                  <span className="pt-live" aria-hidden="true" />
-                </div>
-                {latest.private && <div className="pt-classified">[ classified · private repo ]</div>}
-              </div>
-            )}
-            {done && activity && activity.week.commits > 0 && (
-              <div className="pt-mono">
-                <div><span className="pt-neon">$ </span>git rev-list --count --since=1.week</div>
-                <div className="pt-faint text-sm">
-                  {activity.week.commits} commits{activity.week.classified > 0 && <> · <span className="pt-neon">{activity.week.classified} classified</span></>}
+                <div><span className="pt-neon">$ </span>systemctl status gopi</div>
+                <div className="pt-status">
+                  <div><span className="pt-live" aria-hidden="true" /> <span className="pt-soft">gopi.service</span> — {profile.title}</div>
+                  <dl>
+                    <dt>Active</dt><dd><span className="pt-neon">active (running)</span> since 2021</dd>
+                    <dt>Local</dt><dd>{clock} · {profile.location}</dd>
+                    {latest && (
+                      <>
+                        <dt>Last push</dt>
+                        <dd className="pt-commit">
+                          {"repo" in latest ? (
+                            <>
+                              <a href={latest.url} target="_blank" rel="noopener noreferrer" className="pt-soft">{latest.repo}</a>
+                              <span className="pt-commit-msg">· {latest.msg}</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="pt-redact" aria-hidden="true">████████</span>
+                              <span className="pt-commit-msg"><Scramble paused={paused} /></span>
+                            </>
+                          )}
+                          <span>· {ago(latest.when)}</span>
+                        </dd>
+                      </>
+                    )}
+                    {activity && activity.week.commits > 0 && (
+                      <>
+                        <dt>This week</dt>
+                        <dd>{activity.week.commits} commits{activity.week.classified > 0 && <> · <span className="pt-neon">{activity.week.classified} classified</span></>}</dd>
+                      </>
+                    )}
+                    {activity && <><dt>Synced</dt><dd>{ago(activity.updated)}</dd></>}
+                  </dl>
                 </div>
               </div>
             )}
@@ -261,7 +282,33 @@ const Index = () => {
           </div>
         </Section>
 
-        <Section id="experience" n="02" title="Experience" cmd="git log --oneline career/">
+        <Section id="systems" n="02" title="Classified systems" cmd="ls ~/work/classified">
+          <p className="pt-soft mb-6">Client and government work. No links, no screenshots — but here's what it does.</p>
+          <div className="grid gap-3">
+            {systems.map((x, i) => (
+              <details key={x.name} className="pt-case">
+                <summary>
+                  <span className="pt-case-num">{String(i + 1).padStart(2, "0")}/{String(systems.length).padStart(2, "0")}</span>
+                  <span className="pt-case-main">
+                    <span className="flex flex-wrap items-baseline justify-between gap-2">
+                      <span className="font-semibold">{x.name}</span>
+                      <span className="pt-classified">▓ classified</span>
+                    </span>
+                    <span className="pt-case-result">{x.result}</span>
+                    <span className="flex flex-wrap gap-2 mt-2">
+                      <span className="pt-tag pt-tag-kind">{x.kind}</span>
+                      {x.stack.map((t) => <span key={t} className="pt-tag">{t}</span>)}
+                    </span>
+                  </span>
+                  <span className="pt-case-toggle" aria-hidden="true" />
+                </summary>
+                <ul>{x.details.map((d) => <li key={d}>{d}</li>)}</ul>
+              </details>
+            ))}
+          </div>
+        </Section>
+
+        <Section id="experience" n="03" title="Experience" cmd="git log --oneline career/">
           {experience.map((job, j) => (
             <details key={job.company} className="pt-job" open={j < 2}>
               <summary>
@@ -283,7 +330,7 @@ const Index = () => {
           ))}
         </Section>
 
-        <Section id="projects" n="03" title="Projects" cmd="ls ~/side-quests">
+        <Section id="projects" n="04" title="Projects" cmd="ls ~/side-quests">
           <div className="grid gap-4">
             {projects.map((p) => (
               <article key={p.name} className="pt-card">
@@ -301,7 +348,7 @@ const Index = () => {
           </div>
         </Section>
 
-        <Section id="skills" n="04" title="Skills" cmd="cat requirements.txt">
+        <Section id="skills" n="05" title="Skills" cmd="cat requirements.txt">
           <dl className="grid gap-4">
             {Object.entries(skills).map(([group, list]) => (
               <div key={group} className="pt-skill">
@@ -312,13 +359,13 @@ const Index = () => {
           </dl>
         </Section>
 
-        <Section id="achievements" n="05" title="Achievements" cmd="cat trophies.txt">
+        <Section id="achievements" n="06" title="Achievements" cmd="cat trophies.txt">
           <ul className="grid gap-2 pt-mono">
             {achievements.map((a) => <li key={a.text}><span className="pt-neon font-bold">{a.rank}</span> <span className="pt-soft">— {a.text}</span></li>)}
           </ul>
         </Section>
 
-        <Section id="credentials" n="06" title="Education & Certifications" cmd="cat credentials.json">
+        <Section id="credentials" n="07" title="Education & Certifications" cmd="cat credentials.json">
           <div className="grid md:grid-cols-2 gap-4">
             {education.map((e) => (
               <div key={e.school} className="pt-card">

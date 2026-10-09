@@ -153,6 +153,61 @@ export const experience: Job[] = [
   },
 ];
 
+// Internal/client systems — no links, results straight from the résumé. Titles + `result` lines are DRAFT; confirm with Gopi.
+export const systems = [
+  {
+    name: "SITREP generator",
+    kind: "AI",
+    result: "Situation reports drafted by AI from live operational data",
+    stack: ["Claude API", "ArcGIS", "PDF"],
+    details: [
+      "Developed an AI-enabled SITREP generation workflow using the Claude API, packaging operational data into structured prompts and returning generated report content through an ArcGIS-based application with PDF output.",
+    ],
+  },
+  {
+    name: "Grant closeout forecasting",
+    kind: "ML",
+    result: "C-index 0.923 · forecasts corrected by 6–15 years",
+    stack: ["Cox PH", "Python", "Survival analysis"],
+    details: [
+      "Built a Cox Proportional Hazards survival model (concordance index 0.923) combined with a custom LPC clearance-rate model to forecast closeout timing for FDEM's 60-grant Public Assistance portfolio, correcting prior forecasts by 6 to 15 years on major grants including Hurricane Irma and Hurricane Ian.",
+      "Derived corrected payment closeout thresholds from historical grant data, replacing an inaccurate assumed value and increasing the number of active grants with a reliable closeout projection from 4 of 20 to 16 of 20.",
+      "Built a risk classification framework across the active grant portfolio based on corrected closeout timing, surfacing high-risk cases for targeted follow-up.",
+    ],
+  },
+  {
+    name: "Payment reconciliation pipeline",
+    kind: "Data engineering",
+    result: "1,700 / 1,700 payments matched across three systems",
+    stack: ["Python", "Power BI", "Caching"],
+    details: [
+      "Built an automated payment reconciliation pipeline for FDEM's Mitigation Bureau in Python, matching mitigation payments across the internal tracker, CFO payment history, and DFS state payment records into a single reporting table feeding a Power BI dashboard, with full match coverage across all 1,700 payments received to date.",
+      "Built a caching layer for slow external state payment lookups and match logic that routes uncertain matches to manual review instead of guessing, keeping reconciliation accurate as payment volume grows.",
+      "Built a Power BI dashboard covering payment status, bottlenecks, vendor concentration, and data quality, giving bureau leadership a clear view into where payments stood and where delays were happening.",
+    ],
+  },
+  {
+    name: "State finance data platform",
+    kind: "Data engineering",
+    result: "500K+ rows/day · built from scratch, zero-touch",
+    stack: ["Azure Blob", "Python", "Selenium", "Power BI"],
+    details: [
+      "Architected a Python and Azure Blob Storage data lake to store and version FLAIR/FOCUS financial extracts, supporting historical reprocessing, audit trail maintenance, and cross-period reconciliation independent of source system availability.",
+      "Engineered end-to-end data pipelines from FLAIR/FOCUS through Azure Blob Storage to Power BI, fully automated and built from scratch on greenfield infrastructure with no prior systems to build on.",
+      "Built and maintained Python ETL pipelines ingesting 500K+ rows daily from authenticated .NET web portals, automating login flows and CSRF token handling via Selenium, scheduled via Windows Task Scheduler for zero-touch daily execution.",
+    ],
+  },
+  {
+    name: "Contract routing tracker",
+    kind: "Automation",
+    result: "Average contract approval time −30%",
+    stack: ["Workflow mapping", "Automated alerts"],
+    details: [
+      "Built a Contract Routing Tracker mapping every step of multi-million dollar approval workflows, flagging delays automatically and giving managers a live bottleneck view, reducing average contract approval time by 30%.",
+    ],
+  },
+];
+
 export const projects: { name: string; tag?: string; url: string; live?: string; stack: string[]; bullets: string[] }[] = [
   {
     name: "Florida State Jobs Pipeline",
