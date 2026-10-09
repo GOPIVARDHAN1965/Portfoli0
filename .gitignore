@@ -39,3 +39,4 @@ myenv/
 .env.*
 *.pem
 *.key
+public/activity.json

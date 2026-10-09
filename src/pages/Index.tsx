@@ -14,19 +14,30 @@ const SCRIPT = [
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// Latest public commit, fetched live from GitHub (no token: 60 requests/hour per visitor). Hidden on failure.
-type Commit = { repo: string; url: string; msg: string; when: string };
-function useLastCommit() {
-  const [c, setC] = useState<Commit | null>(null);
+// Written by scripts/activity.mjs at deploy time (every ~30 min via GitHub Actions).
+type Activity = {
+  latest: { private: false; repo: string; url: string; msg: string; when: string } | { private: true; when: string } | null;
+  week: { commits: number; classified: number };
+};
+function useActivity() {
+  const [a, setA] = useState<Activity | null>(null);
   useEffect(() => {
-    const user = profile.github.split("/").pop();
-    const gh = (path: string) => fetch(`https://api.github.com/${path}`).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
-    gh(`users/${user}/repos?sort=pushed&per_page=1`)
-      .then(([repo]) => gh(`repos/${repo.full_name}/commits?per_page=1`).then(([cm]) =>
-        setC({ repo: repo.name, url: repo.html_url, msg: cm.commit.message.split("\n")[0], when: cm.commit.author.date })))
-      .catch(() => {});
+    fetch(`${import.meta.env.BASE_URL}activity.json`).then((r) => (r.ok ? r.json() : null)).then(setA).catch(() => {});
   }, []);
-  return c;
+  return a;
+}
+
+// Text that keeps "decrypting" and never gets there.
+const NOISE = "abcdefghijkmnpqrstuvwxyz0123456789#$%&@!?*";
+const noise = (n: number) => Array.from({ length: n }, () => NOISE[Math.floor(Math.random() * NOISE.length)]).join("");
+function Scramble({ paused, length = 18 }: { paused: boolean; length?: number }) {
+  const [text, setText] = useState(() => noise(length));
+  useEffect(() => {
+    if (paused || reducedMotion()) return;
+    const t = setInterval(() => setText(noise(length)), 90);
+    return () => clearInterval(t);
+  }, [paused, length]);
+  return <span className="pt-scramble" aria-label="classified">▓▒░{text}░▒▓</span>;
 }
 
 const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
@@ -182,7 +193,8 @@ const Index = () => {
   const [run, setRun] = useState(0);
   const lines = useTyping(paused, run);
   const done = lines[lines.length - 1].out !== null;
-  const commit = useLastCommit();
+  const activity = useActivity();
+  const latest = activity?.latest;
 
   useEffect(() => { document.documentElement.classList.toggle("pt-paused", paused); }, [paused]);
 
@@ -202,14 +214,32 @@ const Index = () => {
                 {l.out && <div className={i === 0 ? "pt-name" : i === 1 ? "pt-soft" : "pt-faint"}>{l.out}</div>}
               </div>
             ))}
-            {done && commit && (
+            {done && latest && (
               <div className="pt-mono">
                 <div><span className="pt-neon">$ </span>git log -1 --oneline</div>
                 <div className="pt-commit pt-faint">
-                  <a href={commit.url} target="_blank" rel="noopener noreferrer" className="pt-soft">{commit.repo}</a>
-                  <span className="pt-commit-msg">· {commit.msg}</span>
-                  <span>· {ago(commit.when)}</span>
+                  {"repo" in latest ? (
+                    <>
+                      <a href={latest.url} target="_blank" rel="noopener noreferrer" className="pt-soft">{latest.repo}</a>
+                      <span className="pt-commit-msg">· {latest.msg}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="pt-redact" aria-hidden="true">████████</span>
+                      <span className="pt-commit-msg">· <Scramble paused={paused} /></span>
+                    </>
+                  )}
+                  <span>· {ago(latest.when)}</span>
                   <span className="pt-live" aria-hidden="true" />
+                </div>
+                {latest.private && <div className="pt-classified">[ classified · private repo ]</div>}
+              </div>
+            )}
+            {done && activity && activity.week.commits > 0 && (
+              <div className="pt-mono">
+                <div><span className="pt-neon">$ </span>git rev-list --count --since=1.week</div>
+                <div className="pt-faint text-sm">
+                  {activity.week.commits} commits{activity.week.classified > 0 && <> · <span className="pt-neon">{activity.week.classified} classified</span></>}
                 </div>
               </div>
             )}
