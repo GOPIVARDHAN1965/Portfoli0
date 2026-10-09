@@ -16,19 +16,38 @@ export const profile = {
     "I build data pipelines, forecasting models and AI tools for Florida's emergency management programs. M.S. Data Science, Florida State University.",
 };
 
-export const stats = [
-  { value: "1,700", label: "payments reconciled" },
-  { value: "0.923", label: "survival model C-index" },
-  { value: "15+", label: "Power BI semantic models" },
-  { value: "500K+", label: "rows ingested daily" },
-];
-
-// Before/after pairs. `after` is a % of `before` (before = 100%).
-export const impact = [
-  { metric: "4 → 16", label: "grants with reliable closeout forecast (of 20)", before: 20, after: 80, beforeText: "4 / 20", afterText: "16 / 20" },
-  { metric: "−30%", label: "average contract approval time", before: 100, after: 70, beforeText: "before", afterText: "70%" },
-  { metric: "−40%", label: "weekly reconciliation time (Aramark)", before: 100, after: 60, beforeText: "before", afterText: "60%" },
-  { metric: "−40%", label: "API response time (ZAWN)", before: 100, after: 60, beforeText: "before", afterText: "60%" },
+// DRAFT copy (paraphrased from the résumé) — confirm with Gopi.
+export const work = [
+  {
+    dir: "pipelines/",
+    title: "Data pipelines & ETL",
+    text: "Azure Data Factory, Python ETL and a versioned Azure Blob data lake. State financial data goes in from FLAIR/FOCUS and web portals, reports come out. Nobody clicks \"refresh\".",
+    tools: ["Azure Data Factory", "Python", "Azure Blob", "Selenium", "SQL"],
+  },
+  {
+    dir: "forecasting/",
+    title: "Forecasting & ML",
+    text: "Survival models that predict when federal grants will actually close out — and risk scores for the ones that won't.",
+    tools: ["Cox PH", "ARIMA", "Prophet", "Scikit-learn"],
+  },
+  {
+    dir: "dashboards/",
+    title: "BI & dashboards",
+    text: "Power BI semantic models and KPI frameworks, so leadership answers their own questions instead of emailing an analyst.",
+    tools: ["Power BI", "DAX", "Power Query", "SQL"],
+  },
+  {
+    dir: "ai-apps/",
+    title: "AI apps",
+    text: "Claude-powered SITREP report generation, RAG over PDFs, and internal web apps that people actually use.",
+    tools: ["Claude API", "Next.js", "Supabase", "LangChain"],
+  },
+  {
+    dir: "reconciliation/",
+    title: "Finance automation",
+    text: "Matching payments across systems that disagree with each other, and sending the weird ones to a human instead of guessing.",
+    tools: ["Python", "Power Automate", "Excel VBA"],
+  },
 ];
 
 type Role = { title: string; period: string; bullets: string[] };
@@ -134,7 +153,19 @@ export const experience: Job[] = [
   },
 ];
 
-export const projects = [
+export const projects: { name: string; tag?: string; url: string; live?: string; stack: string[]; bullets: string[] }[] = [
+  {
+    name: "Florida State Jobs Pipeline",
+    tag: "Live",
+    url: "https://github.com/GOPIVARDHAN1965/florida-jobs-pipeline",
+    live: "https://gopivardhan1965.github.io/florida-jobs-pipeline/",
+    stack: ["Python", "GitHub Actions", "ETL", "JavaScript"],
+    bullets: [
+      "Built a scheduled pipeline that scrapes all ~1,300 open State of Florida job postings daily, fetching detail pages incrementally (only new postings) and tracking first/last-seen dates to record when jobs open and close.",
+      "Wrote a salary parser that normalises a dozen free-text pay formats (hourly, biweekly, monthly, annual, ranges, typos) into annual ranges, covering 89% of postings, with regression tests pinned to real-world strings.",
+      "Published a dependency-free dashboard on GitHub Pages showing hiring by agency and city, median salary by job category, posting trends, and a searchable table with a data & tech roles filter.",
+    ],
+  },
   {
     name: "RAG PDF Query System",
     url: "https://github.com/GOPIVARDHAN1965/rag_ollama_project",
