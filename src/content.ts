@@ -222,6 +222,30 @@ export const projects: { name: string; tag?: string; url: string; live?: string;
     ],
   },
   {
+    name: "Florida Disaster Data Warehouse",
+    tag: "Live",
+    url: "https://github.com/GOPIVARDHAN1965/florida-disaster-warehouse",
+    live: "https://gopivardhan1965.github.io/florida-disaster-warehouse/",
+    stack: ["DuckDB", "dbt", "Python", "scikit-learn", "GitHub Actions"],
+    bullets: [
+      "Built an incrementally loaded warehouse joining 610K+ rows of OpenFEMA disaster spending, NOAA hurricane tracks and Census data for Florida's 67 counties, rebuilt weekly by GitHub Actions with each raw snapshot versioned as a release asset.",
+      "Modelled raw → staging → marts in dbt on DuckDB (21 models, 51 data tests); the tests caught Miami-Dade's pre-1997 county code, dollars dropped by a wrong fact-table grain, and FEMA totals with no project detail behind them.",
+      "Trained a model that predicts which counties receive FEMA Individual Assistance from a storm's track: ROC AUC 0.92 on held-out 2020–2025 storms vs 0.73 for a wind-distance rule, after per-storm error analysis exposed a leaky feature.",
+    ],
+  },
+  {
+    name: "World Disaster Watch",
+    tag: "Live",
+    url: "https://github.com/GOPIVARDHAN1965/world-disaster-watch",
+    live: "https://gopivardhan1965.github.io/world-disaster-watch/",
+    stack: ["JavaScript", "MapLibre GL", "Python", "GitHub Actions"],
+    bullets: [
+      "Built a live map of every active cyclone, earthquake, flood, wildfire, volcano and drought worldwide, refreshed hourly from GDACS and USGS, with cyclone wind zones, forecast cones and tracks drawn as map layers.",
+      "Turned raw feed numbers into plain-language explanations (magnitude, hurricane category, burned area, what an alert level means) using tested templates, so no figure is ever invented.",
+      "Added search-as-you-type and click-anywhere inspection: a 24-hour forecast strip, 7-day outlook, air quality and nearby disasters for any place, opening on the visitor's own location.",
+    ],
+  },
+  {
     name: "RAG PDF Query System",
     url: "https://github.com/GOPIVARDHAN1965/rag_ollama_project",
     stack: ["Python", "Ollama", "FAISS", "Flask"],
