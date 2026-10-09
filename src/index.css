@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Palette after ponytail.dev: warm near-black, off-white ink, holo gradient, plus neon green. Dark only. */
+/* Palette after ponytail.dev: warm near-black, off-white ink, neon green accent. Dark only. */
 @layer base {
   :root {
     color-scheme: dark;
@@ -14,7 +14,6 @@
     --line: rgba(239, 233, 221, 0.1);
     --panel: rgba(16, 14, 13, 0.88);
     --neon: #39ff88;
-    --holo: linear-gradient(120deg, #7fe3f5 0%, #b49cff 50%, #ff9fd8 100%);
     --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   }
@@ -30,7 +29,6 @@
 .pt-soft { color: var(--soft); }
 .pt-faint { color: var(--faint); }
 .pt-neon { color: var(--neon); text-shadow: 0 0 8px rgba(57, 255, 136, 0.45); }
-.pt-holo { background: var(--holo); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .pt-label { display: block; font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
 
 .pt-wrap { max-width: 900px; margin: 0 auto; padding: 0 16px; }
@@ -59,8 +57,13 @@
 .pt-job summary::-webkit-details-marker { display: none; }
 .pt-job summary::before { content: "▸"; font-family: var(--mono); color: var(--faint); margin-right: 8px; }
 .pt-job[open] summary::before { content: "▾"; }
-.pt-job summary > span:first-of-type { flex: 1; }
-.pt-role { margin-top: 16px; }
+.pt-company { font-weight: 700; font-size: 1.05rem; flex: 1; }
+.pt-timeline { margin: 14px 0 4px 4px; padding-left: 22px; border-left: 1px solid var(--line); }
+.pt-role { position: relative; }
+.pt-role + .pt-role { margin-top: 22px; }
+.pt-role::before { content: ""; position: absolute; left: -28px; top: 0.45em; width: 11px; height: 11px; border-radius: 50%; background: var(--bg); border: 2px solid var(--neon); }
+.pt-now::before { background: var(--neon); box-shadow: 0 0 10px var(--neon); }
+.pt-role-title { font-family: var(--mono); font-weight: 700; color: var(--ink); }
 .pt-role ul, .pt-card ul { margin-top: 8px; display: grid; gap: 6px; color: var(--soft); font-size: 0.95rem; }
 .pt-role li, .pt-card li { padding-left: 1.2em; position: relative; }
 .pt-role li::before, .pt-card li::before { content: "–"; position: absolute; left: 0; color: var(--faint); }
@@ -82,7 +85,7 @@
 /* nav icon buttons + the light-mode prank */
 .pt-icon { font-size: 16px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; font-family: var(--mono); color: var(--muted); }
 .pt-icon:hover { color: var(--neon); }
-.pt-switch { position: relative; display: inline-flex; transition: left 0.25s ease, top 0.25s ease; }
+.pt-switch { position: relative; display: inline-flex; }
 .pt-bubble { position: absolute; top: 38px; right: 0; font: 12px var(--mono); color: var(--neon); background: var(--panel); border: 1px solid var(--neon); border-radius: 6px; padding: 4px 8px; box-shadow: 0 0 12px rgba(57, 255, 136, 0.25); width: max-content; max-width: min(260px, 80vw); }
 
 /* pause button + OS setting both stop motion */

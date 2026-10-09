@@ -65,8 +65,7 @@ function Rain({ paused }: { paused: boolean }) {
   return <canvas ref={ref} className="pt-rain" aria-hidden="true" />;
 }
 
-// The "light mode" button. It runs away from the mouse a few times, then just refuses.
-const DODGES = ["nope.", "too slow.", "still no.", "fine. click it then."];
+// The "light mode" button. It never turns light mode on.
 const QUIPS = [
   "Light mode? In this economy?",
   "Bugs are attracted to light. Request denied.",
@@ -76,34 +75,19 @@ const QUIPS = [
   "My dashboards are dark. My pipelines are dark. Consistency.",
 ];
 function LightSwitch() {
-  const [dodges, setDodges] = useState(0);
   const [clicks, setClicks] = useState(0);
-  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
-  const [msg, setMsg] = useState("");
-
+  const msg = clicks ? QUIPS[(clicks - 1) % QUIPS.length] : "";
+  const [shown, setShown] = useState(false);
   useEffect(() => {
-    if (!msg) return;
-    const t = setTimeout(() => { setMsg(""); setPos(null); setDodges(0); }, 3500);
+    if (!clicks) return;
+    setShown(true);
+    const t = setTimeout(() => setShown(false), 3500);
     return () => clearTimeout(t);
-  }, [msg]);
-
-  const dodge = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse" || dodges >= DODGES.length || reducedMotion()) return;
-    if (dodges < DODGES.length - 1) {
-      setPos({ x: 16 + Math.random() * (innerWidth - 240), y: 80 + Math.random() * (innerHeight - 200) });
-    }
-    setMsg(DODGES[dodges]);
-    setDodges(dodges + 1);
-  };
-  const click = () => {
-    setMsg(QUIPS[clicks % QUIPS.length]);
-    setClicks(clicks + 1);
-  };
-
+  }, [clicks]);
   return (
-    <span className="pt-switch" style={pos ? { position: "fixed", left: pos.x, top: pos.y, zIndex: 60 } : undefined}>
-      <button onPointerEnter={dodge} onClick={click} className="pt-icon" aria-label="Switch to light mode">☀</button>
-      {msg && <span className="pt-bubble" role="status">{msg}</span>}
+    <span className="pt-switch">
+      <button onClick={() => setClicks(clicks + 1)} className="pt-icon" aria-label="Switch to light mode">☀</button>
+      {shown && <span className="pt-bubble" role="status">{msg}</span>}
     </span>
   );
 }
@@ -216,17 +200,20 @@ const Index = () => {
           {experience.map((job, j) => (
             <details key={job.company} className="pt-job" open={j < 2}>
               <summary>
-                <span className="font-semibold">{job.company}</span>
+                <span className="pt-company">{job.company}</span>
                 <span className="pt-label">{job.location}</span>
               </summary>
-              {job.roles.map((r) => (
-                <div key={r.title} className="pt-role">
-                  <div className="flex flex-wrap justify-between gap-2 pt-mono text-sm">
-                    <span className="pt-holo font-bold">{r.title}</span><span className="pt-faint">{r.period}</span>
+              <div className="pt-timeline">
+                {job.roles.map((r) => (
+                  <div key={r.title} className={`pt-role${r.period.includes("Present") ? " pt-now" : ""}`}>
+                    <div className="flex flex-wrap justify-between gap-x-4 gap-y-1">
+                      <span className="pt-role-title">{r.title}</span>
+                      <span className="pt-mono text-sm pt-faint">{r.period}</span>
+                    </div>
+                    <ul>{r.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
                   </div>
-                  <ul>{r.bullets.map((b) => <li key={b}>{b}</li>)}</ul>
-                </div>
-              ))}
+                ))}
+              </div>
             </details>
           ))}
         </Section>
