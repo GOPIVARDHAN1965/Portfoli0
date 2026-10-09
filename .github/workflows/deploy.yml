@@ -1,5 +1,5 @@
 # Builds and publishes the site to GitHub Pages on every push to main,
-# and every 30 min so the hero's git activity stays fresh.
+# and every 30 min so the hero's git activity (public repos) stays fresh.
 name: deploy
 
 on:
@@ -34,6 +34,7 @@ jobs:
       - run: node scripts/activity.mjs
         env:
           ACTIVITY_TOKEN: ${{ secrets.ACTIVITY_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:

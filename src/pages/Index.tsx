@@ -17,7 +17,6 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 // Written by scripts/activity.mjs at deploy time (every ~30 min via GitHub Actions).
 type Activity = {
   latest: { private: false; repo: string; url: string; msg: string; when: string } | { private: true; when: string } | null;
-  week: { commits: number; private: number };
   updated: string;
 };
 function useActivity() {
@@ -253,13 +252,6 @@ const Index = () => {
                         </dd>
                       </>
                     )}
-                    {activity && activity.week.commits > 0 && (
-                      <>
-                        <dt>This week</dt>
-                        <dd>{activity.week.commits} commits{activity.week.private > 0 && <> · <span className="pt-neon">{activity.week.private} private</span></>}</dd>
-                      </>
-                    )}
-                    {activity && <><dt>Synced</dt><dd>{ago(activity.updated)}</dd></>}
                   </dl>
                 </div>
               </div>
