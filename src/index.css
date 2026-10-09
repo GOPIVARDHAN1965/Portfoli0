@@ -50,7 +50,7 @@
 .pt-commit .pt-commit-msg { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pt-redact { color: var(--faint); letter-spacing: -0.05em; }
 .pt-scramble { color: var(--neon); opacity: 0.75; }
-.pt-classified { display: inline-block; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--neon); border: 1px solid rgba(57, 255, 136, 0.4); padding: 1px 8px; border-radius: 3px; }
+.pt-internal { display: inline-block; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--neon); border: 1px solid rgba(57, 255, 136, 0.4); padding: 1px 8px; border-radius: 3px; }
 .pt-status { margin-top: 2px; font-size: 14px; color: var(--muted); }
 .pt-status dl { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; row-gap: 2px; margin: 4px 0 0 18px; }
 .pt-status dt { color: var(--faint); text-align: right; }
@@ -90,7 +90,7 @@
   .pt-status .pt-commit .pt-commit-msg { white-space: normal; overflow: visible; }
 }
 
-/* classified case cards */
+/* internal-systems case cards */
 .pt-case { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); transition: border-color 0.2s; }
 .pt-case:hover, .pt-case[open] { border-color: rgba(57, 255, 136, 0.35); }
 .pt-case summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; padding: 16px 18px; }

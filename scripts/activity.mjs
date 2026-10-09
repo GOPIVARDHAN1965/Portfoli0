@@ -41,11 +41,11 @@ const countCommits = async (e) => {
 
 const weekAgo = Date.now() - 7 * 864e5;
 const recent = pushes.filter((e) => Date.parse(e.created_at) > weekAgo);
-let commits = 0, classified = 0;
+let commits = 0, privateCommits = 0;
 for (const e of recent) {
   const n = await countCommits(e);
   commits += n;
-  if (!e.public) classified += n;
+  if (!e.public) privateCommits += n;
 }
 
 let latest = null;
@@ -63,5 +63,5 @@ if (last?.public) {
   latest = { private: true, when: last.created_at };
 }
 
-writeFileSync(OUT, JSON.stringify({ latest, week: { commits, classified }, updated: new Date().toISOString() }) + "\n");
-console.log(`activity: ${commits} commits this week (${classified} private), latest ${latest?.private ? "private" : latest?.repo}`);
+writeFileSync(OUT, JSON.stringify({ latest, week: { commits, private: privateCommits }, updated: new Date().toISOString() }) + "\n");
+console.log(`activity: ${commits} commits this week (${privateCommits} private), latest ${latest?.private ? "private" : latest?.repo}`);

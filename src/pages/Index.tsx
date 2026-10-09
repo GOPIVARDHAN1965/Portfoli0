@@ -17,7 +17,7 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 // Written by scripts/activity.mjs at deploy time (every ~30 min via GitHub Actions).
 type Activity = {
   latest: { private: false; repo: string; url: string; msg: string; when: string } | { private: true; when: string } | null;
-  week: { commits: number; classified: number };
+  week: { commits: number; private: number };
   updated: string;
 };
 function useActivity() {
@@ -38,7 +38,7 @@ function Scramble({ paused, length = 18 }: { paused: boolean; length?: number })
     const t = setInterval(() => setText(noise(length)), 90);
     return () => clearInterval(t);
   }, [paused, length]);
-  return <span className="pt-scramble" aria-label="classified">▓▒░{text}░▒▓</span>;
+  return <span className="pt-scramble" aria-label="private">▓▒░{text}░▒▓</span>;
 }
 
 const clockFmt = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", timeZoneName: "short" });
@@ -256,7 +256,7 @@ const Index = () => {
                     {activity && activity.week.commits > 0 && (
                       <>
                         <dt>This week</dt>
-                        <dd>{activity.week.commits} commits{activity.week.classified > 0 && <> · <span className="pt-neon">{activity.week.classified} classified</span></>}</dd>
+                        <dd>{activity.week.commits} commits{activity.week.private > 0 && <> · <span className="pt-neon">{activity.week.private} private</span></>}</dd>
                       </>
                     )}
                     {activity && <><dt>Synced</dt><dd>{ago(activity.updated)}</dd></>}
@@ -282,7 +282,7 @@ const Index = () => {
           </div>
         </Section>
 
-        <Section id="systems" n="02" title="Classified systems" cmd="ls ~/work/classified">
+        <Section id="systems" n="02" title="Internal systems" cmd="ls ~/work/internal">
           <p className="pt-soft mb-6">Client and government work. No links, no screenshots — but here's what it does.</p>
           <div className="grid gap-3">
             {systems.map((x, i) => (
@@ -292,7 +292,7 @@ const Index = () => {
                   <span className="pt-case-main">
                     <span className="flex flex-wrap items-baseline justify-between gap-2">
                       <span className="font-semibold">{x.name}</span>
-                      <span className="pt-classified">▓ classified</span>
+                      <span className="pt-internal">▣ internal</span>
                     </span>
                     <span className="pt-case-result">{x.result}</span>
                     <span className="flex flex-wrap gap-2 mt-2">
