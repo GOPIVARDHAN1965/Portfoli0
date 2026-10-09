@@ -45,6 +45,11 @@
 .pt-name { font-family: var(--mono); font-weight: 800; font-size: clamp(2rem, 6vw, 3.4rem); letter-spacing: -0.05em; line-height: 1.1; margin: 4px 0; }
 .pt-cursor { display: inline-block; width: 0.6em; height: 1.1em; vertical-align: text-bottom; background: var(--neon); box-shadow: 0 0 8px var(--neon); margin-left: 2px; animation: pt-blink 1s steps(1) infinite; }
 @keyframes pt-blink { 50% { opacity: 0; } }
+.pt-commit { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 14px; }
+.pt-commit > * { flex-shrink: 0; }
+.pt-commit .pt-commit-msg { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pt-live { width: 7px; height: 7px; border-radius: 50%; background: var(--neon); box-shadow: 0 0 8px var(--neon); animation: pt-pulse 2s ease-in-out infinite; }
+@keyframes pt-pulse { 50% { opacity: 0.25; } }
 .pt-lede { font-size: 1.15rem; color: var(--soft); margin: 28px 0 32px; max-width: 62ch; }
 /* sections */
 .pt-section { padding: 56px 0; border-top: 1px solid var(--line); scroll-margin-top: 60px; }
@@ -92,5 +97,5 @@
 .pt-paused *, .pt-paused *::before { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .pt-cursor { animation: none; }
+  .pt-cursor, .pt-live { animation: none; }
 }

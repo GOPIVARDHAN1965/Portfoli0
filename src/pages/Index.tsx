@@ -14,6 +14,29 @@ const SCRIPT = [
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Latest public commit, fetched live from GitHub (no token: 60 requests/hour per visitor). Hidden on failure.
+type Commit = { repo: string; url: string; msg: string; when: string };
+function useLastCommit() {
+  const [c, setC] = useState<Commit | null>(null);
+  useEffect(() => {
+    const user = profile.github.split("/").pop();
+    const gh = (path: string) => fetch(`https://api.github.com/${path}`).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+    gh(`users/${user}/repos?sort=pushed&per_page=1`)
+      .then(([repo]) => gh(`repos/${repo.full_name}/commits?per_page=1`).then(([cm]) =>
+        setC({ repo: repo.name, url: repo.html_url, msg: cm.commit.message.split("\n")[0], when: cm.commit.author.date })))
+      .catch(() => {});
+  }, []);
+  return c;
+}
+
+const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [["year", 31536e3], ["month", 2592e3], ["day", 86400], ["hour", 3600], ["minute", 60]];
+function ago(iso: string) {
+  const s = (Date.parse(iso) - Date.now()) / 1000;
+  const [unit, size] = UNITS.find(([, n]) => Math.abs(s) >= n) ?? ["second", 1];
+  return unit === "second" ? "just now" : rtf.format(Math.round(s / size), unit);
+}
+
 // Types SCRIPT char by char; `n` = chars shown. Commands type, outputs appear whole.
 function useTyping(paused: boolean, run: number) {
   const total = SCRIPT.reduce((t, l) => t + l.cmd.length, 0);
@@ -159,6 +182,7 @@ const Index = () => {
   const [run, setRun] = useState(0);
   const lines = useTyping(paused, run);
   const done = lines[lines.length - 1].out !== null;
+  const commit = useLastCommit();
 
   useEffect(() => { document.documentElement.classList.toggle("pt-paused", paused); }, [paused]);
 
@@ -178,6 +202,17 @@ const Index = () => {
                 {l.out && <div className={i === 0 ? "pt-name" : i === 1 ? "pt-soft" : "pt-faint"}>{l.out}</div>}
               </div>
             ))}
+            {done && commit && (
+              <div className="pt-mono">
+                <div><span className="pt-neon">$ </span>git log -1 --oneline</div>
+                <div className="pt-commit pt-faint">
+                  <a href={commit.url} target="_blank" rel="noopener noreferrer" className="pt-soft">{commit.repo}</a>
+                  <span className="pt-commit-msg">· {commit.msg}</span>
+                  <span>· {ago(commit.when)}</span>
+                  <span className="pt-live" aria-hidden="true" />
+                </div>
+              </div>
+            )}
             {done && <div className="pt-mono"><span className="pt-neon">$ </span><span className="pt-cursor" /></div>}
           </div>
           <p className="pt-lede">{profile.summary}</p>
